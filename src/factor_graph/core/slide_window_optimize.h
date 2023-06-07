@@ -57,7 +57,7 @@ public:
         }
 
         if(m_graph.GetVariables().size() >= m_option.slide_window_size)
-            Marginalize();
+            m_sparsity_pattern_builder.Marginalize(m_graph, &m_pattern, m_graph.GetVariables().front());
 
         return converged;
     }
@@ -65,27 +65,6 @@ private:
     bool Iterate(FactorGraph *graph, SparsityPattern *pattern);
 
     void LinearizeSingleFactor(Factor *factor, SparsityPattern *pattern);
-
-    bool ContinueIteratingCheck(int iter_num, double current_error, double new_error, bool *converged)
-    {
-        if (!std::isfinite(new_error)) return false;
-
-        if (iter_num == m_option.max_iterations){
-            GRAPH_LOG("Max iterations reached.");
-            return false;
-        }
-
-        const double error_decrease = current_error - new_error;
-        if ((error_decrease <= m_option.absolute_error_th) || ((error_decrease / current_error) <= m_option.relative_error_th)){
-            GRAPH_LOG("Converged.");
-            *converged = true;
-            return false;
-        }
-
-        return true;
-    }
-
-    double ComputeErrorNormSquared(const FactorGraph &graph);
 
     void Marginalize();
 private:

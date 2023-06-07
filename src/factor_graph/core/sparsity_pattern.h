@@ -39,9 +39,9 @@ struct SparsityPattern
         GRAPH_ASSERT(variable_lookup_table.count(var) != 0);
         return variable_lookup_table[var];
     }
-    
+
     typedef Eigen::Triplet<double> T;
-    std::vector<T> tripletList;
+    std::vector<T> triplet_list;
 
     Eigen::SparseMatrix<double> H;
     Eigen::VectorXd b;
@@ -51,6 +51,8 @@ class SparsityPatternBuilder
 {
 public:
     void ConstructSparsityPattern(const FactorGraph &graph, SparsityPattern *pattern);
+
+    void Marginalize(FactorGraph *graph, SparsityPattern *pattern, const Variable *marg_var);
 
     void UpdateSparsityPattern(FactorGraph *graph, SparsityPattern *pattern, const Eigen::VectorXd& dx);
 };

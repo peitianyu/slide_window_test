@@ -37,11 +37,11 @@ bool GraphOptimize::Iterate(FactorGraph *graph, SparsityPattern *pattern)
 {
     const std::vector<Factor *> &factors = graph->GetFactors();
     pattern->b.setZero();
-    pattern->tripletList.clear();
+    pattern->triplet_list.clear();
     for(Factor *factor: factors)
         LinearizeSingleFactor(factor, pattern);// 结算H与b, 并赋值给pattern
-    GRAPH_ASSERT(!pattern->tripletList.empty());
-    pattern->H.setFromTriplets(pattern->tripletList.begin(), pattern->tripletList.end());// 从tripletList获取H矩阵
+    GRAPH_ASSERT(!pattern->triplet_list.empty());
+    pattern->H.setFromTriplets(pattern->triplet_list.begin(), pattern->triplet_list.end());// 从triplet_list获取H矩阵
 
     // TODO: 如果H并不是稀疏矩阵,通过近似最小度排序变为稀疏矩阵
     // AMD 或者 COLAMD
@@ -114,7 +114,7 @@ void GraphOptimize::LinearizeSingleFactor(Factor *factor, SparsityPattern *patte
             const int JtJ_row = vars_cols[j];
             for (int JtJ_i = JtJ_col, H_i = H_col; JtJ_i < (JtJ_col + vars_dim[i]); ++JtJ_i, ++H_i){
                 for (int JtJ_j = JtJ_row, H_j = H_row; JtJ_j < (JtJ_row + vars_dim[j]); ++JtJ_j, ++H_j){
-                    pattern->tripletList.push_back(SparsityPattern::T(H_j, H_i, JtJ(JtJ_j, JtJ_i)));
+                    pattern->triplet_list.push_back(SparsityPattern::T(H_j, H_i, JtJ(JtJ_j, JtJ_i)));
                 }
             }
         }

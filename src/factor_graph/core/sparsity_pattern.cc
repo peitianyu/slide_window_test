@@ -33,6 +33,17 @@ void SparsityPatternBuilder::ConstructSparsityPattern(const FactorGraph &graph, 
     pattern->b = Eigen::VectorXd::Zero(total_variables_dim);
 }
 
+void SparsityPatternBuilder::Marginalize(FactorGraph *graph, SparsityPattern *pattern, const Variable *marg_var)
+{
+    // 1. 将要边缘化得变量放到最前边
+
+    // 2. 使用舒尔补生成边缘化因子
+
+    // 3. 更新H与b
+    
+    // 4. 删除边缘化变量
+}
+
 void SparsityPatternBuilder::UpdateSparsityPattern(FactorGraph *graph, SparsityPattern *pattern, const Eigen::VectorXd &dx)
 {
     std::vector<Variable *> &variables = graph->GetVariables(); // 更新变量
