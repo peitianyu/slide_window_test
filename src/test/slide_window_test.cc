@@ -119,7 +119,7 @@ void TestSlideWindow1()
     std::cout << H_prior << std::endl;
 }
 
-JUST_RUN_TEST(slide_window, test)
+// JUST_RUN_TEST(slide_window, test)
 TEST(slide_window, test)
 {
     // TestSlideWindow();
