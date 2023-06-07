@@ -13,38 +13,42 @@ class Factor
 public:
     static constexpr int kMaxVariables = 2;
 
-    virtual ~Factor()
-    {
-        // std::cerr << "Never delete Factor" << std::endl;
-    }
+    Factor() = default;
 
-    int NumVariables() const;
+    int NumVariables() const { return m_num_variables; }
 
     void AddVariable(Variable *v);
 
-    Variable *VariableAt(int idx) const;
+    Variable *VariableAt(int idx) const
+    {
+        GRAPH_ASSERT(m_num_variables > 0 && idx < m_num_variables);
+        return m_variables[idx];
+    }
 
     // Dimensionality of the error.
-    virtual int Dim() const = 0;
+    virtual int ErrorDim() const = 0;
 
     virtual Eigen::VectorXd Error() const = 0;
 
     // Returns e1 - e2.
     virtual Eigen::VectorXd SubtractError(const Eigen::VectorXd &e1, const Eigen::VectorXd &e2) const = 0;
 
-    // Jacobian wrt to the variable at idx. Defaults
-    // to computing the jacobian numerically.
-    virtual Eigen::MatrixXd Jacobian(int idx) const;
+    // Jacobian wrt to the variable at idx. 
+    // Defaults to computing the jacobian numerically.
+    virtual Eigen::MatrixXd Jacobian(int idx) const
+    {
+        GRAPH_ASSERT(m_num_variables > 0 && idx < m_num_variables);
+        return ComputeNumericalJacobian(m_variables[idx]);
+    }
     
-    void SetSqrtInfo(const Eigen::MatrixXd &sqrt_info);
+    void SetInfoMatrix(const Eigen::MatrixXd &info_matrix) { m_info_matrix = info_matrix; }
 
-    Eigen::MatrixXd GetSqrtInfo() const { return m_sqrt_info; }
+    Eigen::MatrixXd GetSqrtInfoMatrix() const { return m_info_matrix; }
 protected:
     Eigen::MatrixXd ComputeNumericalJacobian(Variable * v) const;
     std::array<Variable *, kMaxVariables> m_variables;
     int m_num_variables = 0;
-    Eigen::MatrixXd m_sqrt_info;
-    bool m_sqrt_info_set = false;
+    Eigen::MatrixXd m_info_matrix;
 };
 
 #endif // __FACTOR_H__

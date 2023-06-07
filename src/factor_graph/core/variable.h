@@ -7,10 +7,8 @@
 class Variable
 {
 public:
-    virtual ~Variable()
-    {
-        // std::cerr<<"Never delete Variable"<<std::endl;
-    }
+    Variable() = default;
+    
     virtual size_t Dim() const = 0;
 
     virtual void Plus(const Eigen::VectorXd &delta) = 0;

@@ -6,6 +6,7 @@ GraphOptimize::GraphOptimize(Option option)
 
 bool GraphOptimize::OptimizeGN(FactorGraph *graph)
 {
+    // 1. 构造稀疏图缓存器
     GRAPH_LOG("Started optimization with %i factors and %i variables.", (int)graph->GetFactors().size(), (int)graph->GetVariables().size());
     SparsityPattern pattern;
     m_sparsity_pattern_builder.ConstructSparsityPattern(*graph, &pattern);  // 初始化稀疏图缓存器
@@ -28,6 +29,7 @@ bool GraphOptimize::OptimizeGN(FactorGraph *graph)
         
         last_error = current_error;
     }
+
     return converged;
 }
 
@@ -41,26 +43,22 @@ bool GraphOptimize::Iterate(FactorGraph *graph, SparsityPattern *pattern)
     GRAPH_ASSERT(!pattern->tripletList.empty());
     pattern->H.setFromTriplets(pattern->tripletList.begin(), pattern->tripletList.end());// 从tripletList获取H矩阵
 
-    // 实现滑窗, 边缘化
-    // if(m_option.do_marginalization)
-    //     Marginalize(graph, pattern);
-
     // TODO: 如果H并不是稀疏矩阵,通过近似最小度排序变为稀疏矩阵
     // AMD 或者 COLAMD
     Eigen::SimplicialLDLT<Eigen::SparseMatrix<double>> chol(pattern->H);
     Eigen::VectorXd dx = chol.solve(pattern->b);
-    // if (chol.info() != Eigen::Success)
-    // {
-    //     GRAPH_LOG("Cholesky decomposition failed.");
-    //     return false;
-    // }
+    if (chol.info() != Eigen::Success)
+    {
+        GRAPH_LOG("Cholesky decomposition failed.");
+        return false;
+    }
     m_sparsity_pattern_builder.UpdateSparsityPattern(graph, pattern, dx);
     return true;
 }
 
 void GraphOptimize::LinearizeSingleFactor(Factor *factor, SparsityPattern *pattern)
 {
-    const int n_rows = factor->Dim();
+    const int n_rows = factor->ErrorDim();
     const int num_variables = factor->NumVariables();
     std::vector<int> vars_cols(num_variables, -1);
     std::vector<int> vars_dim(num_variables, -1);
@@ -93,32 +91,29 @@ void GraphOptimize::LinearizeSingleFactor(Factor *factor, SparsityPattern *patte
             start_col += J.cols();
         }
     }
+
     // 求解JtJ获得整个H,之后会对稀疏H矩阵进行赋值
     Eigen::MatrixXd JtJ(Js.cols(), Js.cols());
-    JtJ.noalias() = Js.transpose() *  factor->GetSqrtInfo() * Js; // Eigen默认会解决混淆问题，如果你确定不会出现混淆，可以使用noalias（）来提效
+    JtJ.noalias() = Js.transpose() *  factor->GetSqrtInfoMatrix() * Js; // Eigen默认会解决混淆问题，如果你确定不会出现混淆，可以使用noalias（）来提效
 
-    // Now we need to add the contribution to H. Note that we are only filling the lower triangular part. // 通过雅可比求解H矩阵
+    // 现在我们需要将贡献值添加到h中，注意我们只填充下三角形部分。 
+    // 通过雅可比求解H矩阵
     for (int i = 0; i < num_variables; ++i)
     {
         if (factor->VariableAt(i)->fixed)
-        {
             continue;
-        }
+
         const int H_col = pattern->VariableLookup(factor->VariableAt(i)).Idx();
         const int JtJ_col = vars_cols[i];
         for (int j = i; j < num_variables; ++j)
         {
             if (factor->VariableAt(j)->fixed)
-            {
                 continue;
-            }
             
             const int H_row = pattern->VariableLookup(factor->VariableAt(j)).Idx();
             const int JtJ_row = vars_cols[j];
-            for (int JtJ_i = JtJ_col, H_i = H_col; JtJ_i < (JtJ_col + vars_dim[i]); ++JtJ_i, ++H_i)
-            {
-                for (int JtJ_j = JtJ_row, H_j = H_row; JtJ_j < (JtJ_row + vars_dim[j]); ++JtJ_j, ++H_j)
-                {
+            for (int JtJ_i = JtJ_col, H_i = H_col; JtJ_i < (JtJ_col + vars_dim[i]); ++JtJ_i, ++H_i){
+                for (int JtJ_j = JtJ_row, H_j = H_row; JtJ_j < (JtJ_row + vars_dim[j]); ++JtJ_j, ++H_j){
                     pattern->tripletList.push_back(SparsityPattern::T(H_j, H_i, JtJ(JtJ_j, JtJ_i)));
                 }
             }
@@ -127,7 +122,7 @@ void GraphOptimize::LinearizeSingleFactor(Factor *factor, SparsityPattern *patte
     
     // Handle the vector b.
     // 对b赋值
-    const Eigen::VectorXd Jtb = Js.transpose() *  factor->GetSqrtInfo() * factor->Error();
+    const Eigen::VectorXd Jtb = Js.transpose() *  factor->GetSqrtInfoMatrix() * factor->Error();
     for (int i = 0; i < num_variables; ++i)
     {
         Variable *var = factor->VariableAt(i);
@@ -152,8 +147,8 @@ bool GraphOptimize::ContinueIteratingCheck(int iter_num, double current_error, d
     }
 
     const double error_decrease = current_error - new_error;
-    if ((error_decrease <= m_option.absolute_error_th) ||
-        ((error_decrease / current_error) <= m_option.relative_error_th)){
+    if ((error_decrease <= m_option.absolute_error_th) || ((error_decrease / current_error) <= m_option.relative_error_th))
+    {
         GRAPH_LOG("Converged.");
         *converged = true;
         return false;

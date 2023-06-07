@@ -4,6 +4,8 @@
 #include "../core/factor_graph.h"
 #include <Eigen/Sparse>
 
+
+// for each variable, we need to know its dimension and its index in the H matrix.
 struct VariableOrdering
 {
 public:
@@ -25,16 +27,19 @@ private:
     int m_idx; // The index of this variable in the H matrix.
 };
 
+
+// This class is used to construct the sparsity pattern of the Hessian matrix.
 struct SparsityPattern
 {
     int total_variables_dim = 0;
     int total_factors_dim = 0;
     std::map<Variable *, VariableOrdering> variable_lookup_table;
-    inline const VariableOrdering &VariableLookup(Variable *var)
-    {
+
+    inline const VariableOrdering &VariableLookup(Variable *var){
         GRAPH_ASSERT(variable_lookup_table.count(var) != 0);
         return variable_lookup_table[var];
     }
+    
     typedef Eigen::Triplet<double> T;
     std::vector<T> tripletList;
 

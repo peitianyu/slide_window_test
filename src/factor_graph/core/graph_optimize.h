@@ -21,7 +21,6 @@ public:
     GraphOptimize(Option option);
 
     bool OptimizeGN(FactorGraph *graph);
-
 private:
     bool Iterate(FactorGraph *graph, SparsityPattern *pattern);
 

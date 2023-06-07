@@ -1,11 +1,5 @@
 #include"factor.h"
 
-
-int Factor::NumVariables() const 
-{ 
-    return m_num_variables; 
-}
-
 void Factor::AddVariable(Variable *v)
 {
     GRAPH_ASSERT(m_num_variables < kMaxVariables);
@@ -15,22 +9,7 @@ void Factor::AddVariable(Variable *v)
 
 Variable *Factor::VariableAt(int idx) const
 {
-    GRAPH_ASSERT(m_num_variables > 0 && idx < m_num_variables);
-    return m_variables[idx];
-}
-
-// Jacobian wrt to the variable at idx. Defaults
-// to computing the jacobian numerically.
-Eigen::MatrixXd Factor::Jacobian(int idx) const
-{
-    GRAPH_ASSERT(m_num_variables > 0 && idx < m_num_variables);
-    return ComputeNumericalJacobian(m_variables[idx]);
-}
-
-void Factor::SetSqrtInfo(const Eigen::MatrixXd &sqrt_info)
-{
-    m_sqrt_info = sqrt_info;
-    m_sqrt_info_set = true;
+    
 }
 
 Eigen::MatrixXd Factor::ComputeNumericalJacobian(Variable * v) const
