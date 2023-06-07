@@ -13,11 +13,15 @@ class Slam2dG2o
 public:
     void Run(const std::string &g2o_path, const std::string &log_file)
     {
-        std::vector<Variable*> variables; 
+        std::map<int, Variable*> variable_map; 
         std::vector<Factor*> factors;
-        if (!LoadG2O(g2o_path, variables, factors))
+        if (!LoadG2O(g2o_path, variable_map, factors))
             std::cerr<<"Cant load g2o file"<<std::endl;
-        
+
+        std::vector<Variable*> variables;
+        for(auto& v: variable_map)
+            variables.push_back(v.second);
+
         m_graph.AddVariables(variables);
         m_graph.AddFactors(factors);
 

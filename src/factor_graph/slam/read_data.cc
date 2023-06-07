@@ -10,7 +10,7 @@ static double NormalizeAngle(double theta_rad)
     return (theta_rad - k2PI * std::floor((theta_rad + kPI) / k2PI));
 }
 
-bool LoadG2O(const std::string &filename, std::vector<Variable*>& variables, std::vector<Factor*>& factors) 
+bool LoadG2O(const std::string &filename, std::map<int, Variable*>& variables, std::vector<Factor*>& factors) 
 {
     variables.clear();
     factors.clear();
@@ -35,7 +35,7 @@ bool LoadG2O(const std::string &filename, std::vector<Variable*>& variables, std
             double x, y, th;
             ss >> id >> x >> y >> th;
             Pose2d *p = new Pose2d(x, y, NormalizeAngle(th));
-            variables.push_back(p);
+            variables[id] = p;
             id_to_pose[id] = p;
         }
         else if (data_type == "EDGE_SE2")
@@ -58,6 +58,7 @@ bool LoadG2O(const std::string &filename, std::vector<Variable*>& variables, std
             return false;
         }
     }
+    
     return true;
 }
 
