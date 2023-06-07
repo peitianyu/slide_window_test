@@ -8,7 +8,9 @@ class Variable
 {
 public:
     Variable() = default;
-    
+
+    virtual ~Variable() {}
+
     virtual size_t Dim() const = 0;
 
     virtual void Plus(const Eigen::VectorXd &delta) = 0;

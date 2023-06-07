@@ -15,6 +15,8 @@ public:
 
     Factor() = default;
 
+    virtual ~Factor() {}
+
     int NumVariables() const { return m_num_variables; }
 
     void AddVariable(Variable *v);

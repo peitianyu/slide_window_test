@@ -49,8 +49,7 @@ bool LoadG2O(const std::string &filename, std::map<int, Variable*>& variables, s
                                                                 .finished();
             GRAPH_ASSERT(id_to_pose.count(id_a) != 0);
             GRAPH_ASSERT(id_to_pose.count(id_b) != 0);
-            factors.push_back(new Pose2PoseFactor(id_to_pose[id_a], id_to_pose[id_b], dx, dy, d_yaw, info_mtrx
-                                                               ));
+            factors.push_back(new Pose2PoseFactor(id_to_pose[id_a], id_to_pose[id_b], dx, dy, d_yaw, info_mtrx));
         }
         else
         {

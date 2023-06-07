@@ -7,6 +7,7 @@ class FactorGraph
 {
 public:
     FactorGraph() = default;
+    
     ~FactorGraph()
     {
         for (Factor* f : m_factors){delete f;}

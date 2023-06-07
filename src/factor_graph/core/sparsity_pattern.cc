@@ -24,7 +24,7 @@ void SparsityPatternBuilder::ConstructSparsityPattern(const FactorGraph &graph, 
     int total_factors_dim = 0;
     for (int i = 0, count = factors.size(); i < count; ++i)
     {
-        const int f_dim = factors[i]->Dim();
+        const int f_dim = factors[i]->ErrorDim();
         total_factors_dim += f_dim;
     }
     pattern->total_factors_dim = total_factors_dim;

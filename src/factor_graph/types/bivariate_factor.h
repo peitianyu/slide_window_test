@@ -15,7 +15,7 @@ public:
         AddVariable(p_b);
     }
 
-    virtual int Dim() const { return 2; }
+    virtual int ErrorDim() const { return 2; }
     virtual Eigen::VectorXd Error() const override
     {
         const auto p1 = static_cast<Point2d *>(this->VariableAt(0))->Position();
@@ -41,7 +41,7 @@ public:
         AddVariable(p_b);
     }
 
-    virtual int Dim() const { return 2; }
+    virtual int ErrorDim() const { return 2; }
     virtual Eigen::VectorXd Error() const override
     {
         const auto p1 = static_cast<Point2d *>(this->VariableAt(0))->Position();
@@ -75,10 +75,10 @@ public:
     {
         AddVariable(v_a);
         AddVariable(v_b);
-        SetSqrtInfo(sqrt_info);
+        SetInfoMatrix(sqrt_info);
     }
 
-    virtual int Dim() const { return 3; }
+    virtual int ErrorDim() const { return 3; }
 
     virtual Eigen::VectorXd Error() const override
     {

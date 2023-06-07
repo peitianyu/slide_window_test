@@ -7,16 +7,11 @@ void Factor::AddVariable(Variable *v)
     ++m_num_variables;
 }
 
-Variable *Factor::VariableAt(int idx) const
-{
-    
-}
-
 Eigen::MatrixXd Factor::ComputeNumericalJacobian(Variable * v) const
 {
     constexpr double h = 1e-5;
     const int N = v->Dim();
-    const int M = this->Dim();
+    const int M = this->ErrorDim();
     Eigen::MatrixXd J = Eigen::MatrixXd::Zero(M, N);
     Eigen::VectorXd dx = Eigen::VectorXd::Zero(N);
     Eigen::VectorXd dy0 = this->Error();
