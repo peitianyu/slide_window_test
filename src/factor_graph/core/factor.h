@@ -1,11 +1,12 @@
 #ifndef __FACTOR_H__
-#define __FACTOR_H__
+#define __FACTOR_H__ 
 
-#include<vector>
-#include<memory>
-#include<Eigen/Core>
-#include"variable.h"
-#include "utils.h"
+#include <vector>
+#include <array>
+#include <memory>
+#include <Eigen/Core>
+#include "variable.h"
+#include "core/tt_assert.h"
 #include <iostream>
 
 class Factor
@@ -20,13 +21,13 @@ public:
     int NumVariables() const { return m_num_variables; }
 
     void AddVariable(Variable *v){
-        GRAPH_ASSERT(m_num_variables < kMaxVariables);
+        tt_assert(m_num_variables < kMaxVariables);
         m_variables[m_num_variables] = v;
         ++m_num_variables;
     }
 
     Variable *VariableAt(int idx) const {
-        GRAPH_ASSERT(m_num_variables > 0 && idx < m_num_variables);
+        tt_assert(m_num_variables > 0 && idx < m_num_variables);
         return m_variables[idx];
     }
 
@@ -44,7 +45,7 @@ public:
     // Jacobian wrt to the variable at idx. 
     // Defaults to computing the jacobian numerically.
     virtual Eigen::MatrixXd Jacobian(int idx) const {
-        GRAPH_ASSERT(m_num_variables > 0 && idx < m_num_variables);
+        tt_assert(m_num_variables > 0 && idx < m_num_variables);
         return ComputeNumericalJacobian(m_variables[idx]);
     }
 protected:
@@ -72,7 +73,7 @@ protected:
         }
         return J;
     }
-prrivate:
+private:
     std::array<Variable *, kMaxVariables> m_variables;
     int m_num_variables = 0;
     Eigen::MatrixXd m_info_matrix;

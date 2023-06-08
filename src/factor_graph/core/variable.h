@@ -16,8 +16,6 @@ public:
     virtual void Plus(const Eigen::VectorXd &delta) = 0;
 
     virtual void Print() const = 0;
-
-    virtual int id() const { return 0; }
  
     bool fixed = false;
 };
