@@ -21,13 +21,13 @@ public:
     int NumVariables() const { return m_num_variables; }
 
     void AddVariable(Variable *v){
-        tt_assert(m_num_variables < kMaxVariables);
+        tt_assert(m_num_variables < kMaxVariables && "Too many variables in this factor.");
         m_variables[m_num_variables] = v;
         ++m_num_variables;
     }
 
     Variable *VariableAt(int idx) const {
-        tt_assert(m_num_variables > 0 && idx < m_num_variables);
+        tt_assert(m_num_variables > 0 && idx < m_num_variables && "Invalid variable index.");
         return m_variables[idx];
     }
 
@@ -45,7 +45,7 @@ public:
     // Jacobian wrt to the variable at idx. 
     // Defaults to computing the jacobian numerically.
     virtual Eigen::MatrixXd Jacobian(int idx) const {
-        tt_assert(m_num_variables > 0 && idx < m_num_variables);
+        tt_assert(m_num_variables > 0 && idx < m_num_variables && "Invalid variable index.");
         return ComputeNumericalJacobian(m_variables[idx]);
     }
 protected:
