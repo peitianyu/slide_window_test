@@ -72,7 +72,7 @@ void TestSlideWindow1()
     int idx = 1;            // marg 中间那个变量
     int dim = 1;            // marg 变量的维度
     int reserve_size = 3;   // 总共变量的维度
-    int cols = 3;
+    int cols = 3;           // Hessian 矩阵的维度
     Eigen::MatrixXd H_marg(Eigen::MatrixXd::Zero(cols, cols));
     H_marg << 1, 2, 7,
               2, 5, 6,

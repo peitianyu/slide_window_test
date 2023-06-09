@@ -5,18 +5,9 @@
 struct PatternOrdering
 {
 public:
-    PatternOrdering(const int& col = -1, const int& row = -1, const int& idx = -1)
-        : m_col(col), m_row(row), m_idx(idx) {}
-
-    inline PatternOrdering &SetCol(int val)
+    inline PatternOrdering &SetDim(int val)
     {
-        m_col = val;
-        return *this;
-    }
-
-    inline PatternOrdering &SetRow(int val)
-    {
-        m_row = val;
+        m_dim = val;
         return *this;
     }
 
@@ -26,12 +17,10 @@ public:
         return *this;
     }
 
-    inline int Row() const { return m_row; }
-    inline int Col() const { return m_col; }
+    inline int Dim() const { return m_dim; }
     inline int Idx() const { return m_idx; }
 private:
-    int m_row;
-    int m_col;
+    int m_dim;
     int m_idx; // The index of this variable in the H matrix.
 };
 
