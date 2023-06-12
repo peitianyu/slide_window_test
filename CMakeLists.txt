@@ -11,7 +11,7 @@ SET(CMAKE_CXX_COMPILER "g++")
 # 执行路径设置
 # SET(EXECUTABLE_OUTPUT_PATH ../bin)
 # 设置编译选项
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -Wall -std=c++14 -fPIC -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -Wall -std=c++14 -fPIC")
 
 # 运行测试
 add_definitions(-DTEST_ENABLE)

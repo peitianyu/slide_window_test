@@ -49,15 +49,15 @@ public:
     const std::vector<Variable*>& GetVariables() const{ return m_variables; }
     const std::vector<Factor*>& GetFactors() const{return m_factors; }
 
-    bool OptimizeGN(std::vector<Factor*> factors)
+    bool OptimizeGN()
     {
-        for(Factor* f : factors) ConstructSparsityPattern(f);
+        for(Factor* f : m_factors) ConstructSparsityPattern(f);
 
-        for(auto& var : m_optimized_variables){
-            var->Print();
-        }
+        // for(auto& var : m_optimized_variables){
+        //     var->Print();
+        // }
            
-        double current_error = 0.5 * ComputeErrorNormSquared(factors); // 用于收敛判断
+        double current_error = 0.5 * ComputeErrorNormSquared(m_factors); // 用于收敛判断
         double last_error = current_error;
 
         bool converged = false;
@@ -66,7 +66,7 @@ public:
             Eigen::VectorXd dx = m_variable_pattern.H.ldlt().solve(m_variable_pattern.b);
             UpdateSparsityPattern(dx);
             std::cout << "GN Iteration: " << iter << "current_error: " << current_error << std::endl;
-            current_error = 0.5 * ComputeErrorNormSquared(factors);
+            current_error = 0.5 * ComputeErrorNormSquared(m_factors);
             if(IsConverged(iter, last_error, current_error)){
                 converged = true;
                 break;
@@ -74,10 +74,10 @@ public:
             last_error = current_error;
         }
 
-        std::cout << "-------------------------" << std::endl;
+        // std::cout << "-------------------------" << std::endl;
         std::cout << "converged: " << converged << std::endl;
-        for(auto& var : m_optimized_variables)
-            var->Print();
+        // for(auto& var : m_optimized_variables)
+        //     var->Print();
 
         return converged;
 

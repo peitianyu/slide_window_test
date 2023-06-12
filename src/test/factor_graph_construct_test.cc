@@ -21,11 +21,17 @@ public:
         LoadG2O(data_path, vars, factors);
 
         for(Pose2d *var : vars) m_factor_graph.AddVariable(var);
-           
-        for(PoseBetweenFactor *factor : factors) m_factor_graph.AddFactor(factor);
+        
+        uint cnt = 0;
+        for(PoseBetweenFactor *factor : factors){
+            if(cnt++ > 100) break;
+            m_factor_graph.AddFactor(factor);
+        }
         
         // 只优化前5个因子
-        m_factor_graph.OptimizeGN(std::vector<Factor *>(factors.begin() + 3, factors.begin() + 7));
+        // m_factor_graph.OptimizeGN(std::vector<Factor *>(factors.begin() + 3, factors.begin() + 7));
+
+        m_factor_graph.OptimizeGN();
     }
 private:
     void LoadG2O(const std::string &data_path, std::vector<Pose2d *>& vars, std::vector<PoseBetweenFactor *>& factors)
